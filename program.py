@@ -1,33 +1,43 @@
+import utils
+import constants as consts
+import pickle
 from naive_bayes import NaiveBayes
 from perceptron import Perceptron
-import utils
+from numpy import unique, asarray
+from pathlib import Path
 
-def load_data():
-    tr_im_f = open("Data/trainingimages", "r")
-    tr_lb_f = open("Data/traininglabels", "r")
+def load_prepare_data():
     
-    v_im_f = open("Data/validationimages", "r")
-    v_lb_f = open("Data/validationlabels", "r")
+    tr_c, v_c, ts_c = utils.load_files_content()
     
-    ts_im_f = open("Data/testimages", "r")
-    ts_lb_f = open("Data/testlabels", "r")
+    tr_im_c, tr_lb_c = tr_c
+    v_im_c, v_lb_c = v_c
+    ts_im_c, ts_lb_c = ts_c
     
-    tr_im_c, tr_lb_c = tr_im_f.readlines(), tr_lb_f.readlines()
-    v_im_c, v_lb_c = v_im_f.readlines(), v_lb_f.readlines()
-    ts_im_c, ts_lb_c = ts_im_f.readlines(), ts_lb_f.readlines()
+    if not Path.exists(consts.tr_digits_prob) or not Path.exists(consts.v_digits_prob) or not Path.exists(consts.ts_digits_prob):
+        tr_lb_c = utils.save_digit_probabilitiies(tr_lb_c, consts.training)
+        v_lb_c  = utils.save_digit_probabilitiies(v_lb_c, consts.validation)
+        ts_lb_c = utils.save_digit_probabilitiies(ts_lb_c, consts.testing)
+    else:
+        pass
+        
+    if not Path.exists(consts.tr_features) or not Path.exists(consts.v_features) or not Path.exists(consts.ts_features):    
+        tr_im_c = utils.save_features(tr_im_c, consts.training)
+        v_im_c  = utils.save_features(v_im_c, consts.validation)
+        ts_im_c = utils.save_features(ts_im_c, consts.testing)
+    else:
+        pass
+
+    if not Path.exists(consts.tr_pairing) or not Path.exists(consts.v_pairing) or not Path.exists(consts.ts_pairing):
+        tr_pairs = utils.save_pairs(tr_lb_c, tr_im_c, consts.training)
+        v_pairs  = utils.save_pairs(v_lb_c, v_im_c, consts.validation)
+        ts_pairs = utils.save_pairs(ts_lb_c, ts_im_c, consts.testing)
+    else:
+        pass
     
-    tr_lb_c = list(map(int,utils.remove_nl(tr_lb_c))) 
-    v_lb_c = list(map(int,utils.remove_nl(v_lb_c)))
-    ts_lb_c = list(map(int,utils.remove_nl(ts_lb_c)))
     
-    tr_im_c = utils.join_K_rows(utils.convert_to_bits(tr_im_c))
-    v_im_c = utils.join_K_rows(utils.convert_to_bits(v_im_c))
-    ts_im_c = utils.join_K_rows(utils.convert_to_bits(ts_im_c))
-    
-    tr_pairs = utils.pair_label2features(tr_lb_c, tr_im_c)
-    v_pairs = utils.pair_label2features(v_lb_c, v_im_c)
-    ts_pairs = utils.pair_label2features(ts_lb_c, ts_im_c)
 
 
 if __name__ == '__main__':
-    load_data()
+    print(consts.digit_prob_path)
+    load_prepare_data()
