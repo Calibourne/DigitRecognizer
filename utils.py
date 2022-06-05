@@ -49,13 +49,18 @@ def pair_label2features(lbls: list, features: list):
             (lbls[i], features[i])
             for i in range(len(lbls))
         ]
-        return paired
+        paired_dict= {}
+        for i in range(10):
+            paired_dict[i] = []
+        for lbl, feat in paired:
+            paired_dict[int(lbl)].append(feat)
+        return paired_dict
 
-def get_probabilities(lst: list):
-    freq_dict = get_frequencies(lst)
-    freq = list(freq_dict.values())
-    probabilities = [f / len(lst) for f in freq]
-    return sort_probabilities(list(freq_dict.keys()), probabilities)
+# def get_probabilities(lst: list):
+#     freq_dict = get_frequencies(lst)
+#     freq = list(freq_dict.values())
+#     probabilities = [f / len(lst) for f in freq]
+#     return sort_probabilities(list(freq_dict.keys()), probabilities)
     
 def get_frequencies(lst: list):
     freq = dict()
@@ -70,27 +75,56 @@ def sort_probabilities(keys: list, probs: list):
     tr_paired = list(zip(keys,probs))
     tr_paired.sort(key=lambda x: x[0])
     keys, probs = tuple(zip(*tr_paired))
-    return keys, probs
+    return probs
 
-def save_digit_probabilitiies(lst: list, suffix: str):
-    import pickle
-    lst = list(map(int,remove_nl(lst))) 
-    _, probs = get_probabilities(lst)
-    digits = open(f"{constants.digit_prob_path}{suffix}.obj","wb")
-    pickle.dump(probs, digits)
-    return lst
+# def save_digit_probabilitiies(lst: list, suffix: str):
+#     import pickle
+#     lst = list(map(int,remove_nl(lst))) 
+#     probs = get_probabilities(lst)
+#     digits = open(f"{constants.digit_prob_path}{suffix}.obj","wb")
+#     pickle.dump(probs, digits)
+#     return probs
 
-def save_features(lst: list, suffix: str):
-    import pickle
-    lst = convert_to_features(convert_to_bits(lst))
-    # lst = convert_to_features(lst)
-    features = open(f"{constants.features_path}{suffix}.obj","wb")
-    pickle.dump(lst, features)
-    return lst
+# def save_features(lst: list, suffix: str):
+#     import pickle
+#     lst = convert_to_features(convert_to_bits(lst))
+#     # lst = convert_to_features(lst)
+#     features = open(f"{constants.features_path}{suffix}.obj","wb")
+#     pickle.dump(lst, features)
+#     return lst
 
-def save_pairs(lbls: list, feat: list, suffix: str):
-    import pickle
-    lst = pair_label2features(lbls, feat)
-    pairs = open(f"{constants.pairing_path}{suffix}.obj","wb")
-    pickle.dump(lst, pairs)
-    return lst
+# def save_pairs(lbls: list, feat: list, suffix: str):
+#     import pickle
+#     lst = pair_label2features(lbls, feat)
+#     pairs = open(f"{constants.pairing_path}{suffix}.obj","wb")
+#     pickle.dump(lst, pairs)
+#     return lst
+
+def progressBar(iterable, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iterable    - Required  : iterable object (Iterable)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    total = len(iterable)
+    # Progress Bar Printing Function
+    def printProgressBar (iteration):
+        #percent = f"0.{100*(iteration / float(total))}"
+        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+        filledLength = int(length * iteration // total)
+        bar = fill * filledLength + '-' * (length - filledLength)
+        print(f"\r{prefix} |{bar}| {percent}% {suffix}", end = printEnd)
+    # Initial Call
+    printProgressBar(0)
+    # Update Progress Bar
+    for i, item in enumerate(iterable):
+        yield item
+        printProgressBar(i + 1)
+    # Print New Line on Complete
+    print()
