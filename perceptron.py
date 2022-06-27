@@ -9,7 +9,7 @@ class Perceptron(PredictionModel):
         self.weights = {}
         for i in range(10):
             self.weights[i] = [
-                r.random()
+                0
                 for _ in features[0]
             ]
             # self.weights[i].append(-len(features[0])*len(features[0]))

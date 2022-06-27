@@ -56,11 +56,11 @@ def pair_label2features(lbls: list, features: list):
             paired_dict[int(lbl)].append(feat)
         return paired_dict
 
-# def get_probabilities(lst: list):
-#     freq_dict = get_frequencies(lst)
-#     freq = list(freq_dict.values())
-#     probabilities = [f / len(lst) for f in freq]
-#     return sort_probabilities(list(freq_dict.keys()), probabilities)
+def get_probabilities(lst: list):
+    freq_dict = get_frequencies(lst)
+    freq = list(freq_dict.values())
+    probabilities = [f / len(lst) for f in freq]
+    return sort_probabilities(list(freq_dict.keys()), probabilities)
     
 def get_frequencies(lst: list):
     freq = dict()
