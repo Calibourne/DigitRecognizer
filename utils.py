@@ -128,3 +128,9 @@ def progressBar(iterable, prefix = '', suffix = '', decimals = 1, length = 100, 
         printProgressBar(i + 1)
     # Print New Line on Complete
     print()
+    
+def vec_mul(vecA: list, vecB: list):
+    if len(vecA) != len(vecB):
+        raise ArithmeticError("vecA and vecB must be equal in length")
+    mul = [vecA[i]*vecB[i] for i in range(len(vecA))]
+    return sum(mul)
