@@ -37,31 +37,28 @@ def load_prepare_data():
 
 @app.command()
 def fit_bayes_model(laplace:int, out_filename: Optional[str]=None):
-    system("cls")
-    typer.secho(f'Building Naive Bayes Model for the data with smoothing factor of {laplace}:')
+    echo(f'Building Naive Bayes Model for the data with smoothing factor of {laplace}:')
     if laplace <= 0:
-        typer.secho("Error: Laplace smoothing factor for this Naive Bayes model must be positive")
+        echo("Error: Laplace smoothing factor for this Naive Bayes model must be positive")
         return
     labels, features, pairs = load_prepare_data()
     tr_pairs, _, _ = pairs
-    evalBayes(tr_pairs, labels, features, laplace, 'va' ,out_filename)
-    typer.echo()
+    return evalBayes(tr_pairs, labels, features, laplace, 'va' ,out_filename)
 
 
 @app.command()
 def eval_bayes_model(laplace:int, target_set: str, out_filename: str = None):
-    system("cls")
-    typer.secho(f'Building Naive Bayes Model for the data with smoothing factor of {laplace}:')
+    echo(f'Building Naive Bayes Model for the data with smoothing factor of {laplace}:')
     if laplace <= 0:
-        typer.secho("Error: Laplace smoothing factor for this Naive Bayes model must be positive")
+        echo("Error: Laplace smoothing factor for this Naive Bayes model must be positive")
         return
     if target_set not in ['tr', 'ts', 'va']:
-        typer.secho("invalid set!")
-        typer.secho("use:\n-'tr' for training\n-'va' for validation\n-'ts' for test")
+        echo("invalid set!")
+        echo("use:\n-'tr' for training\n-'va' for validation\n-'ts' for test")
         return
     labels, features, pairs = load_prepare_data()
     tr_pairs, _, _ = pairs
-    evalBayes(tr_pairs, labels, features, laplace, target_set ,out_filename)
+    return evalBayes(tr_pairs, labels, features, laplace, target_set ,out_filename)
 
 
 def evalBayes(pairs, labels, features, laplaceSmoothingFactor:int, target_set:str, out_filename: str = None):
@@ -69,35 +66,46 @@ def evalBayes(pairs, labels, features, laplaceSmoothingFactor:int, target_set:st
     
     target = _target(labels, features)
     
-    model.fit(pairs, target['va']['l'], laplaceSmoothingFactor)
+    model.fit(pairs, target['tr']['l'], laplaceSmoothingFactor)
     
-    target_features, target_lbls = target[target_set]
-    
-    score = model.eval(target_features, target_lbls)
+    score = round(model.eval(target[target_set]['f'], target[target_set]['l']),4)
     n = 'n'
     prompt = f'Accuracy for laplace factor of {laplaceSmoothingFactor} on {target[target_set][n]} set: {score}%'
     echo(prompt, out_filename)
+    echo()
+    return laplaceSmoothingFactor, score
 
 @app.command()
 def fit_perceptron_model(n_epochs:int, out_filename: Optional[str]=None):
-    labels, features, _  =load_prepare_data()
+    labels, features, _ = load_prepare_data()
     if n_epochs <= 0:
-        print('Error: number of epochs must be greater than zero!')
+        echo('Error: number of epochs must be greater than zero!')
         return
-    return fitPerceptron(labels, features, n_epochs, out_filename)
+    return evalPerceptron(labels, features, n_epochs, 'va' ,out_filename)
 
-def fitPerceptron(labels, features, n_epochs:int, target_set:str, out_filename: str = None):
+@app.command()
+def eval_perceptron_model(n_epochs:int, target_set:str, out_filename: str = None):
+    labels, features, _ = load_prepare_data()
+    if n_epochs <= 0:
+        echo('Error: number of epochs must be greater than zero!')
+        return
+    return evalPerceptron(labels, features, n_epochs, target_set ,out_filename)
+
+
+def evalPerceptron(labels, features, n_epochs:int, target_set:str, out_filename: str = None):
+    n = 'n'
     model = Perceptron()
     
     target = _target(labels, features)
     
-    echo(f'Building Perceptron with {n_epochs} training epochs', None)
-    model.fit(tr_features, tr_lbls, n_epochs)
+    echo(f'Building Perceptron with {n_epochs} training epochs')
+    model.fit(target['tr']['f'], target['tr']['l'], n_epochs)
     
-    echo(f'Evaluating accuracy for validation set', None)
-    score = model.eval(v_features, v_lbls)
-    prompt = f'Accuracy for laplace factor of {laplaceSmoothingFactor} on {target[target_set][n]} set: {score}%'
-    print(score)
+    echo(f'Evaluating accuracy for {target[target_set][n]} set')
+    score = model.eval(target[target_set]['f'], target[target_set]['l'])
+    prompt = f'Accuracy for \'n epochs\' of {n_epochs} on {target[target_set][n]} set: {score}%'
+    echo(prompt, out_filename)
+    echo()
     return n_epochs, score
 
 def _target(labels, features):
@@ -124,7 +132,7 @@ def _target(labels, features):
     }
     return target
 
-def echo(prompt, out_filename: str):
+def echo(prompt: str = "", out_filename: str = None):
     if out_filename is not None:
         with open(out_filename, 'a') as f:
             f.write(f'{prompt}\n')
