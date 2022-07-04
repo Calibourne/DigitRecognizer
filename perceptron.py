@@ -11,6 +11,7 @@ class Perceptron(PredictionModel):
                 for _ in features[0]
             ]
         # print(self.weights.keys())
+        processes = list(range(0, len(features)))
         for i in range(n_epochs):
             
             processes = list(range(0, len(features)))
@@ -27,6 +28,7 @@ class Perceptron(PredictionModel):
                     for k in range(len(self.weights[0])):
                         self.weights[most_likely][k] -= features[l][k]
                         self.weights[true][k] += features[l][k]
+        return self
 
     def eval(self,samples, realValues):
         return super().evaluate(samples, realValues)

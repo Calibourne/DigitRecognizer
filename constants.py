@@ -20,5 +20,4 @@ tr_pairing = Path("{pairing_path}{training}.obj")
 v_pairing = Path("{pairing_path}{validation}.obj")
 ts_pairing = Path("{pairing_path}{testing}.obj")
 
-BAYES = '1'
-PERCEPTRON = '2'
+SEP = ''.join(['=' for _ in range(len('Progress: |██████████████████████████████████████████████████| 100.0% Completed'))])

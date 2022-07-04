@@ -77,29 +77,6 @@ def sort_probabilities(keys: list, probs: list):
     keys, probs = tuple(zip(*tr_paired))
     return probs
 
-# def save_digit_probabilitiies(lst: list, suffix: str):
-#     import pickle
-#     lst = list(map(int,remove_nl(lst))) 
-#     probs = get_probabilities(lst)
-#     digits = open(f"{constants.digit_prob_path}{suffix}.obj","wb")
-#     pickle.dump(probs, digits)
-#     return probs
-
-# def save_features(lst: list, suffix: str):
-#     import pickle
-#     lst = convert_to_features(convert_to_bits(lst))
-#     # lst = convert_to_features(lst)
-#     features = open(f"{constants.features_path}{suffix}.obj","wb")
-#     pickle.dump(lst, features)
-#     return lst
-
-# def save_pairs(lbls: list, feat: list, suffix: str):
-#     import pickle
-#     lst = pair_label2features(lbls, feat)
-#     pairs = open(f"{constants.pairing_path}{suffix}.obj","wb")
-#     pickle.dump(lst, pairs)
-#     return lst
-
 def progressBar(iterable, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
     """
     Call in a loop to create terminal progress bar

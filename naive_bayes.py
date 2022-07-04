@@ -16,7 +16,7 @@ class NaiveBayes(PredictionModel):
                 self.dataProb[i][fi] = {}
                 self.dataProb[i][fi][0] = Decimal(len(data[i]) - s + laplaceSmoothingFactor) / Decimal(len(data[i]) + NaiveBayes.X*laplaceSmoothingFactor)
                 self.dataProb[i][fi][1] = Decimal(s + laplaceSmoothingFactor) / Decimal(len(data[i]) + NaiveBayes.X*laplaceSmoothingFactor)
-
+        return self
 
     def predict_X(self, X: list):
         probabilities = {}
